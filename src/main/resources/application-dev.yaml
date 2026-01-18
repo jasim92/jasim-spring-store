@@ -9,8 +9,3 @@ spring:
     import: optional:file:.env.properties
 website:
   url: http://localhost:8080
-google:
-  redirect_url: ${REDIRECT_URL}
-  auth:
-    client_id: ${CLIENT_ID}
-    client_secret: ${CLIENT_SECRET}

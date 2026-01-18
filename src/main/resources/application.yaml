@@ -10,4 +10,8 @@ spring:
 stripe:
   secret_key: ${STRIPE_SECRET_KEY}
   webhook_secret_key: ${STRIPE_WEBHOOK_SECRET_KEY}
-
+google:
+  redirect_url: ${REDIRECT_URL}
+  auth:
+    client_id: ${CLIENT_ID}
+    client_secret: ${CLIENT_SECRET}
