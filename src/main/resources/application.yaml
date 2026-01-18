@@ -10,3 +10,4 @@ spring:
 stripe:
   secret_key: ${STRIPE_SECRET_KEY}
   webhook_secret_key: ${STRIPE_WEBHOOK_SECRET_KEY}
+

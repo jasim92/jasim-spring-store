@@ -58,6 +58,7 @@ public class SecurityConfig {
 //
                         c.requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/auth/google/callback").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/carts/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/orders/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/refresh").permitAll()
