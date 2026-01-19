@@ -1,10 +1,15 @@
 package com.jasim.store.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.jasim.store.dtos.ErrorDto;
 import com.jasim.store.dtos.ProductDto;
 import com.jasim.store.entities.Product;
+import com.jasim.store.exceptions.ProductNotFoundException;
+import com.jasim.store.exceptions.RedisDataException;
 import com.jasim.store.mappers.ProductMapper;
 import com.jasim.store.repositories.CategoryRepository;
 import com.jasim.store.repositories.ProductRepository;
+import com.jasim.store.services.RedisService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,17 +30,28 @@ public class ProductController {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
+    private final RedisService redisService;
 
     @GetMapping("/all")
     public List<ProductDto> getAllProducts(@RequestParam(name = "categoryId", defaultValue = "", required = false) Short categoryId) {
+       try {
+           List<ProductDto> productRedis = redisService.get("Category_"+categoryId, new TypeReference<List<ProductDto>>(){});
+           if (productRedis != null){
+               return productRedis;
+           }else {
+               List<Product> products;
+               if (categoryId != null) {
+                   products = productRepository.findProductByCategory_Id(categoryId);
+               } else {
+                   products = productRepository.findProductsByCategory();
+               }
+               redisService.set("Category_" + categoryId, products.stream().map(productMapper::toDto).toList(), 300l);
+               return products.stream().map(productMapper::toDto).toList();
+           }
 
-        List<Product> products;
-        if (categoryId != null) {
-            products = productRepository.findProductByCategory_Id(categoryId);
-        } else {
-            products = productRepository.findProductsByCategory();
-        }
-        return products.stream().map(productMapper::toDto).toList();
+       }catch (Exception e){
+           throw new RedisDataException(e.getMessage());
+       }
 
     }
 
@@ -90,5 +106,11 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @ExceptionHandler(RedisDataException.class)
+    public ResponseEntity<ErrorDto> handleRedisException( Exception e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorDto(e.getMessage()+"xxxxxxxxx")
+        );
+    }
 }
+

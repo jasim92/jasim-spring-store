@@ -1,5 +1,8 @@
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL}
+  data:
+    redis:
+      url: redis://default:kAKSr17ZBvFAJ1wWGZOwMG2zNXoPJfTn@redis-12256.crce176.me-central-1-1.ec2.cloud.redislabs.com:12256
 website:
   url: https://mystore.com
